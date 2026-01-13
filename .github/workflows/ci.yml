@@ -1,0 +1,50 @@
+name: Build and Deploy via Argo CD (GitOps)
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write        # allow committing back to repo
+      packages: write        # allow pushing image to GHCR
+
+    steps:
+      # 1. Checkout repo
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Login to GitHub Container Registry
+      - name: Login to GHCR
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      # 3. Build Docker image
+      - name: Build Docker image
+        run: |
+          IMAGE=ghcr.io/${{ github.repository_owner }}/argocd-website:${{ github.sha }}
+          docker build -t $IMAGE app
+          docker tag $IMAGE ghcr.io/${{ github.repository_owner }}/argocd-website:latest
+
+      # 4. Push Docker image
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/argocd-website:${{ github.sha }}
+          docker push ghcr.io/${{ github.repository_owner }}/argocd-website:latest
+
+      # 5. Update deployment.yaml with new image
+      - name: Update Kubernetes manifest
+        run: |
+          sed -i "s|image:.*|image: ghcr.io/${{ github.repository_owner }}/argocd-website:${{ github.sha }}|" deployment.yaml
+
+      # 6. Commit & push manifest change
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add deployment.yaml
+          git commit -m "ci: update image to ${{ github.sha }}"
+          git push
