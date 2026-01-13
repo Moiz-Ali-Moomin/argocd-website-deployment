@@ -9,38 +9,46 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write        # allow committing back to repo
-      packages: write        # allow pushing image to GHCR
+      contents: write
+      packages: write
 
     steps:
-      # 1. Checkout repo
+      # 1️⃣ Checkout repository
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Login to GitHub Container Registry
+      # 2️⃣ Convert repo owner to lowercase (Docker requirement)
+      - name: Set lowercase image owner
+        id: vars
+        run: |
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo "owner=$OWNER" >> $GITHUB_OUTPUT
+
+      # 3️⃣ Login to GitHub Container Registry
       - name: Login to GHCR
         run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io \
+            -u ${{ github.actor }} --password-stdin
 
-      # 3. Build Docker image
+      # 4️⃣ Build Docker image
       - name: Build Docker image
         run: |
-          IMAGE=ghcr.io/${{ github.repository_owner }}/argocd-website:${{ github.sha }}
+          IMAGE=ghcr.io/${{ steps.vars.outputs.owner }}/argocd-website:${{ github.sha }}
           docker build -t $IMAGE app
-          docker tag $IMAGE ghcr.io/${{ github.repository_owner }}/argocd-website:latest
+          docker tag $IMAGE ghcr.io/${{ steps.vars.outputs.owner }}/argocd-website:latest
 
-      # 4. Push Docker image
+      # 5️⃣ Push Docker image
       - name: Push Docker image
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/argocd-website:${{ github.sha }}
-          docker push ghcr.io/${{ github.repository_owner }}/argocd-website:latest
+          docker push ghcr.io/${{ steps.vars.outputs.owner }}/argocd-website:${{ github.sha }}
+          docker push ghcr.io/${{ steps.vars.outputs.owner }}/argocd-website:latest
 
-      # 5. Update deployment.yaml with new image
+      # 6️⃣ Update deployment.yaml with new image tag
       - name: Update Kubernetes manifest
         run: |
-          sed -i "s|image:.*|image: ghcr.io/${{ github.repository_owner }}/argocd-website:${{ github.sha }}|" deployment.yaml
+          sed -i "s|image:.*|image: ghcr.io/${{ steps.vars.outputs.owner }}/argocd-website:${{ github.sha }}|" deployment.yaml
 
-      # 6. Commit & push manifest change
+      # 7️⃣ Commit and push manifest change
       - name: Commit and push changes
         run: |
           git config user.name "github-actions"
