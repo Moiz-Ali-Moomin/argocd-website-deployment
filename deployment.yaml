@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: ghcr.io/moiz-ali-moomin/argocd-website:efa713e65b14638358029951e2e08818b1cdf009
+          image: ghcr.io/moiz-ali-moomin/argocd-website:1b61110fdf9b608cd0af041bd54d0425136ebc92
           ports:
             - containerPort: 80
           resources:
