@@ -4,7 +4,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
     apt-get install -y nginx && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    useradd -u 101 -U -d /var/www/html -s /bin/false nginx
 
 COPY index.html /var/www/html/index.html
 
