@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/Moiz-Ali-Moomin/argocd-website-deployment.git
+    repoURL: https://github.com/Moiz-Ali-Moomin/argocd-gitops-website-deployment
     targetRevision: HEAD
     path: k8s/overlays/prod
   destination:
