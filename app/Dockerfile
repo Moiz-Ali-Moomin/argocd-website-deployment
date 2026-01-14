@@ -1,6 +1,7 @@
 FROM ubuntu:22.04
 
-RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/* \
+    && rm -f /etc/nginx/conf.d/default.conf
 
 RUN useradd -u 101 -U -d /var/www/html -s /sbin/nologin nginx
 
