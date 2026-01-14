@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-website-ingress
+spec:
+  tls:
+  - hosts:
+    - argocd-website.example.com
+    secretName: argocd-website-tls
+  rules:
+  - host: argocd-website.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: argocd-website-svc
+            port:
+              number: 80

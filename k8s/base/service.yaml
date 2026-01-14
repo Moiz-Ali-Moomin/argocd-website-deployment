@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-website-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: argocd-website
+  ports:
+    - port: 80
+      targetPort: 80

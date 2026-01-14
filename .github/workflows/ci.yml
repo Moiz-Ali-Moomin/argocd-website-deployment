@@ -48,16 +48,17 @@ jobs:
           docker push ghcr.io/${{ steps.vars.outputs.owner }}/argocd-website:${{ github.sha }}
           docker push ghcr.io/${{ steps.vars.outputs.owner }}/argocd-website:latest
 
-      # 7️⃣ Update Kubernetes deployment manifest
-      - name: Update deployment.yaml
+      # 7️⃣ Update Kubernetes deployment manifest (GitOps via Kustomize)
+      - name: Update Kustomize image tag
         run: |
-          sed -i "s|image:.*|image: ghcr.io/${{ steps.vars.outputs.owner }}/argocd-website:${{ github.sha }}|" deployment.yaml
-
+          cd k8s/overlays/prod
+          kustomize edit set image ghcr.io/${{ steps.vars.outputs.owner }}/argocd-website=ghcr.io/${{ steps.vars.outputs.owner }}/argocd-website:${{ github.sha }}
+          
       # 8️⃣ Commit and push manifest change
       - name: Commit and push changes
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add deployment.yaml
+          git add k8s/overlays/prod/kustomization.yaml
           git commit -m "ci: update image to ${{ github.sha }}"
           git push

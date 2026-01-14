@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-website
+  labels:
+    app: argocd-website
+    logging: "true"
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "80"
+spec:
+  replicas: 1 # Default, overridden by overlays
+  selector:
+    matchLabels:
+      app: argocd-website
+  template:
+    metadata:
+      labels:
+        app: argocd-website
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "80"
+    spec:
+      serviceAccountName: argocd-website-sa
+      containers:
+        - name: nginx
+          image: ghcr.io/moiz-ali-moomin/argocd-website:bfa525edb77de377c2e4827c5514b9a9f6219de0
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
