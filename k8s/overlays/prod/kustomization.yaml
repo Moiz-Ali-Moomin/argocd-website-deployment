@@ -9,4 +9,4 @@ patches:
 images:
 - name: ghcr.io/moiz-ali-moomin/argocd-website
   newName: ghcr.io/moiz-ali-moomin/argocd-website
-  newTag: d7fcb246dbf7313e37f048e5b816f84f657a7b6b
+  newTag: 6d77ab3b163bb9ff58e66929efc954824406179d
