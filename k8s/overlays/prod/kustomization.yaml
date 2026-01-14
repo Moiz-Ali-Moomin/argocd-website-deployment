@@ -1,10 +1,12 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-
 resources:
 - ../../base
-
 patches:
 - path: replica-patch.yaml
 - path: resource-patch.yaml
 - path: ingress-patch.yaml
+images:
+- name: ghcr.io/moiz-ali-moomin/argocd-website
+  newName: ghcr.io/moiz-ali-moomin/argocd-website
+  newTag: d7fcb246dbf7313e37f048e5b816f84f657a7b6b
