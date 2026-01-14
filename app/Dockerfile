@@ -8,6 +8,10 @@ RUN apt-get update && \
 
 COPY index.html /var/www/html/index.html
 
-EXPOSE 80
+RUN chown -R nginx:nginx /var/cache/nginx /var/run /var/log/nginx
+
+USER nginx
+
+EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]
