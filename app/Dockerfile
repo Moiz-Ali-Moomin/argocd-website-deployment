@@ -1,16 +1,13 @@
 FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && \
-    apt-get install -y nginx && \
-    rm -rf /var/lib/apt/lists/* && \
-    useradd -u 101 -U -d /var/www/html -s /bin/false nginx
+RUN useradd -u 101 -U -d /var/www/html -s /sbin/nologin nginx
 
+COPY nginx.conf /etc/nginx/nginx.conf
 COPY index.html /var/www/html/index.html
 
-RUN mkdir -p /var/cache/nginx /var/log/nginx /var/lib/nginx /var/tmp/nginx && \
-    chown -R nginx:nginx /var/cache/nginx /var/log/nginx /var/lib/nginx /var/tmp/nginx /var/run
+RUN chown -R nginx:nginx /var/www/html
 
 USER nginx
 

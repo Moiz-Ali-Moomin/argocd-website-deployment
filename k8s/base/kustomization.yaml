@@ -6,7 +6,6 @@ resources:
   - service.yaml
   - ingress.yaml
   - configmap.yaml
-  - nginx-config.yaml
   - serviceaccount.yaml
   - rbac.yaml
 
