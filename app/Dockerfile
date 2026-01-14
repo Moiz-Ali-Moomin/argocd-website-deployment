@@ -9,7 +9,8 @@ RUN apt-get update && \
 
 COPY index.html /var/www/html/index.html
 
-RUN chown -R nginx:nginx /var/cache/nginx /var/run /var/log/nginx
+RUN mkdir -p /var/cache/nginx /var/log/nginx /var/lib/nginx /var/tmp/nginx && \
+    chown -R nginx:nginx /var/cache/nginx /var/log/nginx /var/lib/nginx /var/tmp/nginx /var/run
 
 USER nginx
 
